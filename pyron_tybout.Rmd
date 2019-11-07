@@ -1,0 +1,92 @@
+---
+title: "HW10"
+author: "Jaimee Pyron and Sam Tybout"
+date: "11/5/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+To break this down, our original function looked like this:
+```{r, echo=FALSE}
+co2_per_cap = function(country, year, file){
+  data = read.csv(file)
+  year = paste("X", as.character(year), sep = "")
+  emissions = data[data$country == country, year]
+  return(emissions)
+}
+```
+A function named co2_per_cap was created, with the input paramters of country, year, and file. The file is read as a .csv and the format of the year is adjusted to match that of the format in the .csv file. The emissions for the given country and year are extracted and returned to the user.
+
+The next task was to assign a grade for the given country's emissions based on aggregated data from every country for the given year. Breakpoints for the quantiles are denoted as .1, .2, .3, and .4, with anything greater than 40% representing an F. This can be seen below:
+```{r, echo=FALSE}
+  quantiles <- quantile(data[,year], c(.1, .2, .3, .4), na.rm = TRUE)
+  names(quantiles) <- c("A", "B", "C", "D")
+  grade <- "F"
+```
+
+
+Next, a for loop is implemented to determine if the given country's emissions is wihtin the range of each grade. Note that a counter is incremented to receive the correct placement of the grade in the quantiles vector.
+```{r, echo=FALSE}
+  counter = 1
+  for (q in quantiles){
+    if (emissions < q){
+      grade <- names(quantiles[counter])
+      break
+    }
+    counter = counter + 1
+  }
+```
+
+
+Finally, we check to make sure the country and year inputed by the user is actually in the dataset. We also ensure that there is data availabile for that given country and year.
+```{r, echo = FALSE}
+  if (!(country %in% data$country)){
+    stop("Not a country in dataset")
+  }
+  if (!(year %in% colnames(data))){
+    stop("Not a year in dataset")
+  }
+  
+  emissions = data[data$country == country, year]
+  if(is.na(emissions)){
+    print("No data for that year")
+  }
+```
+
+Our solution to HW 10 is as follows:
+```{r, echo=FALSE}
+co2_per_cap = function(country, year, file){
+  data = read.csv(file)
+  year <- paste("X", as.character(year), sep = "")
+  
+  if (!(year %in% colnames(data))){
+    stop("Not a year in dataset")
+  }
+  if (!(country %in% data$country)){
+    stop("Not a country in dataset")
+  }
+  emissions = data[data$country == country, year]
+  if(is.na(emissions)){
+    print("No data for that year")
+  }
+  
+  emissions <- data[data$country == country, year]
+  quantiles <- quantile(data[,year], c(.1, .2, .3, .4), na.rm = TRUE)
+  names(quantiles) <- c("A", "B", "C", "D")
+  grade <- "F"
+  counter = 1
+  for (q in quantiles){
+    if (emissions < q){
+      grade <- names(quantiles[counter])
+      break
+    }
+    counter = counter + 1
+  }
+  print(paste("Grade:", as.character(grade), as.character(emissions), "tonnes of emissions per person per year"))
+}
+```
+Notably, the final product of our function is an output to the user that reports the grade and total emissions of a country in tonnes of emissions per person per year.
