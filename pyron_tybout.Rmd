@@ -90,3 +90,8 @@ co2_per_cap = function(country, year, file){
 }
 ```
 Notably, the final product of our function is an output to the user that reports the grade and total emissions of a country in tonnes of emissions per person per year.
+
+
+```{r}
+co2_per_cap("Nigeria", 2000, "data/co2_emissions_tonnes_per_person_gapminder.csv")
+```
